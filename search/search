@@ -1,0 +1,95 @@
+#!/bin/bash
+
+if [ ! -n "$1" ]
+then
+echo "No parameters found."
+exit 0;
+fi
+
+search=''
+name='*'
+path='./'
+lmode=false
+grep_options=''
+echo_value=''
+grep_option_string=''
+additional_string=0
+
+count=1
+while [ -n "$1" ]
+do
+case "$1" in
+-h) echo "\
+    Search help
+    
+    You can set param (or usr keys):
+        \$1: search string
+        \$2: file name
+        \$3: path
+    
+    Default params:
+        \$1: ''
+        \$2: '*'
+        \$3: './'
+        
+    Keys:
+        -s: search string
+        -n: file name (use \\* for all)
+        -d: path
+        -l: list mode
+        -a: additional strings\
+    ";
+    exit 0;;
+
+-s) search="$2" ;
+shift ;;
+
+-n) name="$2" ;
+shift ;;
+
+-d) path="$2" ;
+shift ;;
+
+-a) additional_string="$2" ;
+shift ;;
+
+-l) lmode=true;;
+ 
+-*) echo "$1 is not an option";;
+
+*) case "$count" in
+        1) search="$1";;
+        2) name="$1";;
+        3) path="$1";;
+    esac
+count=$(( $count + 1 ));;
+
+esac
+
+shift
+done
+
+if $lmode; then
+    grep_options='l';
+else
+    grep_options='nie';
+    echo_value='\n--------------\n';
+
+    if [ "$additional_string" -gt "0" ] ; then
+        grep_option_string="-C $additional_string"
+        echo_value="{}$echo_value"
+    else
+        grep_options="H$grep_options"
+    fi
+fi
+
+
+echo "Search: $search \
+    name: $name \
+    path: $path"
+
+find "$path" -type f -name "$name" \
+    -exec grep $grep_option_string -$grep_options "$search" --color=auto {} \; \
+    -exec echo -e "$echo_value" \; ;
+
+exit 0;
