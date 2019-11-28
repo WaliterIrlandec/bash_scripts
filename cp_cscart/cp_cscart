@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+***BACKUP ALLL****
+tar -cvf dumpWIFolders.tar  \
+--exclude='./images/*' --exclude='./var/*' --exclude='./install_files/*' \
+--exclude='./upgrades/*'  --exclude='./*.zip' \
+./*;
+tar -rf dumpWIFolders.tar ./var/langs/*;
+mysqldump -u%S_DB_USER% -p%S_DB_PASS% %S_DB_NAME% > ./dumpWItmp.sql;
+tar -rf dumpWIFolders.tar ./dumpWItmp.sql;
+rm -f ./dumpWItmp.sql;
+gzip dumpWIFolders.tar;
+
+***/BACKUP ALLL****
+
+***RESTORE ALLL****
+gunzip dumpWIFolders.tar;
+tar -xvf dumpWIFolders.tar;
+rm -f dumpWIFolders.tar;
+mysqladmin -f drop %L_DB_NAME%;
+mysqladmin create %L_DB_NAME%;
+pv dumpWItmp.sql | mysql -ur%L_DB_USER% -p%L_DB_PASS% %L_DB_NAME%
+
+***/RESTORE ALLL****
+

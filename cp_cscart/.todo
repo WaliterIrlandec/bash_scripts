@@ -1,0 +1,12 @@
+
+fixme 
+    - add local.conf.php (if exist -> rm str with data and add new or replace)
+    - full script connect to ssh, go to folder, do p1, download, p2, local.conf + add work dir(folder names after www/html?)
+    - rm pv
+    - from server to server
+    - param, if not exist work in input mod with default data from .env
+    - permissions
+    - in mysql change store urls
+    - exclude folders enter mod to?
+    - posible to set local adress in local.conf to images folder
+    - timer
