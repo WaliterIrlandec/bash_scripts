@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Version: 1.0.2
+
 # check mpg321 package
 I=`dpkg -s mpg321 2>/dev/null | grep "Status"` 
 if [ ! -n "$I"  ]
@@ -8,17 +10,20 @@ then
     sudo apt install mpg321;
 fi
 
+vol_dir=`dirname $0`;
+vol_dir="${vol_dir}/timer.mp3";
+
 # check mp3 file
-if [ ! -f ./timer.mp3  ]
+if [ ! -f $vol_dir  ]
 then
     link="https://drivemusic.cc/dl/iWur6YfOVIwNPhmYzhST6g/1565837488/download_music/2013/11/franz-peter-schubert-ave-maria.mp3"
     echo "Telecharger musique";
-    wget $link -O timer.mp3;
+    wget $link -O $vol_dir;
 fi
 
 min=$1
 let "sec = 60 * $min"
 
-time read -t $sec; mpg321 --gain 50 --loop 2 ./timer.mp3;
+time read -t $sec; mpg321 --gain 50 --loop 2 $vol_dir;
 
 exit 0;
