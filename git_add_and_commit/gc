@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Git commit
+# Version: 1.0.0
+
+text=$*
+
+if [ ! -n "$text"  ]
+then
+    text=`date -u`;
+fi
+
+echo "Commit: ${text}"
+
+git commit -m "$text"
+
+exit 0;

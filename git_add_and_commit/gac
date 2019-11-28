@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Git add & commit
+# Version: 1.0.0
+
+git add *;
+gc $@;
+
+exit 0;
