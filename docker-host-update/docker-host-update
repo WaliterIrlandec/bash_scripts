@@ -2,7 +2,7 @@
 
 #alias
 declare -A aliasArr
-aliasArr[saldia_backend_laravel.test_1]="my_saldia,bexio_saldia"
+aliasArr[CONTAINER_NAME]="alias1,alias2"
 
 # clear existing *.docker.local entries from /etc/hosts
 sudo sed -i '/\.docker\.local$/d' /etc/hosts
