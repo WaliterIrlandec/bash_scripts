@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# WIFIXME:  use for [2..5] for all! + change case on if + new arr extencions if exist etencions[c] use this value (jbg, cr3) else use jpg | mb use sub fnc or array [2,3,4,5]
+# need etencions[5] = [JPG, CR3] because use both => use for
+
+# WIFIXME: check video .MP4
+# WIFIXME: remove folder
+
+echo "start";
+
+# paths
+declare -r -A dirs=(
+  # [prj]="/home/wi/tmp/photos/"
+  [prj]="/home/wi/tmp/1/"
+  [src]="all_photos_canon/"
+  [video]="moves/"
+  [5]="five_stars/"
+  [4]="raw/"
+  [3]="to_inst/"
+  [2]="photo_cannon/"
+)
+
+# statistic
+declare -A st=(
+  [total]=0
+  [video]=0
+  [2]=0
+  [3]=0
+  [4]=0
+  [5]=0
+)
+
+# create out folders if !exist
+mkdir -p "${dirs[prj]}${dirs[2]}"
+mkdir -p "${dirs[prj]}${dirs[3]}"
+mkdir -p "${dirs[prj]}${dirs[4]}"
+mkdir -p "${dirs[prj]}${dirs[5]}"
+
+for i in `find ${dirs[prj]}${dirs[src]} -depth -type d ! -path ${dirs[prj]}${dirs[src]}`
+do
+  echo "check folder: ${i}"
+
+  total=0
+  folder_2=0
+  folder_3=0
+  folder_4=0
+  folder_5=0
+  for j in `find ${i} -type f -name "*.JPG"`
+  do
+    # echo "photo: ${j}"
+    case $(exiftool -T -Rating ${j}) in
+      2)
+        cp ${j} ${dirs[prj]}${dirs[2]};
+        folder_2=$((folder_2+1));
+        ;;
+      3)
+        cp ${j} ${dirs[prj]}${dirs[3]};
+        folder_3=$((folder_3+1))
+        ;;
+      4)
+        new_file=${j/JPG/CR3};
+        if [[ -f "$new_file" ]]; then
+          cp ${new_file} ${dirs[prj]}${dirs[4]};
+        fi
+
+        folder_4=$((folder_4+1))
+        ;;
+      5)
+        cp ${j} ${dirs[prj]}${dirs[5]};
+        new_file=${j/JPG/CR3};
+        if [[ -f "$new_file" ]]; then
+          cp ${new_file} ${dirs[prj]}${dirs[5]};
+        fi
+
+        folder_5=$((folder_5+1))
+        ;;
+    esac
+
+    rm ${j};
+    new_file=${j/JPG/CR3};
+    if [[ -f "$new_file" ]]; then
+      rm ${new_file};
+    fi
+
+    total=$((total+1))
+  done
+  echo "folder total: ${total}"
+  echo "folder rating 2: ${folder_2}"
+  echo "folder rating 3: ${folder_3}"
+  echo "folder rating 4: ${folder_4}"
+  echo "folder rating 5: ${folder_5}"
+
+  st[total]=$((st[total]+total))
+  st[2]=$((st[2]+folder_2))
+  st[3]=$((st[3]+folder_3))
+  st[4]=$((st[4]+folder_4))
+  st[5]=$((st[5]+folder_5))
+
+done
+
+echo "-------------------"
+echo "total: ${st[total]}"
+echo "rating 2: ${st[2]}"
+echo "rating 3: ${st[3]}"
+echo "rating 4: ${st[4]}"
+echo "rating 5: ${st[5]}"
+
+echo "fin";
+exit;
