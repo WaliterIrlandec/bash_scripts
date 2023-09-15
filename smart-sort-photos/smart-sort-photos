@@ -3,15 +3,15 @@
 # WIFIXME:  use for [2..5] for all! + change case on if + new arr extencions if exist etencions[c] use this value (jbg, cr3) else use jpg | mb use sub fnc or array [2,3,4,5]
 # need etencions[5] = [JPG, CR3] because use both => use for
 
-# WIFIXME: check video .MP4
-# WIFIXME: remove folder
+# WIFIXME: folders per month
+# WIFIXME: add raw_to_lightroom
+
 
 echo "start";
 
 # paths
 declare -r -A dirs=(
-  # [prj]="/home/wi/tmp/photos/"
-  [prj]="/home/wi/tmp/1/"
+  [prj]="/home/wi/tmp/photos/"
   [src]="all_photos_canon/"
   [video]="moves/"
   [5]="five_stars/"
@@ -31,6 +31,7 @@ declare -A st=(
 )
 
 # create out folders if !exist
+mkdir -p "${dirs[prj]}${dirs[video]}"
 mkdir -p "${dirs[prj]}${dirs[2]}"
 mkdir -p "${dirs[prj]}${dirs[3]}"
 mkdir -p "${dirs[prj]}${dirs[4]}"
@@ -41,6 +42,7 @@ do
   echo "check folder: ${i}"
 
   total=0
+  video=0
   folder_2=0
   folder_3=0
   folder_4=0
@@ -50,26 +52,26 @@ do
     # echo "photo: ${j}"
     case $(exiftool -T -Rating ${j}) in
       2)
-        cp ${j} ${dirs[prj]}${dirs[2]};
+        cp -p ${j} ${dirs[prj]}${dirs[2]};
         folder_2=$((folder_2+1));
         ;;
       3)
-        cp ${j} ${dirs[prj]}${dirs[3]};
+        cp -p ${j} ${dirs[prj]}${dirs[3]};
         folder_3=$((folder_3+1))
         ;;
       4)
         new_file=${j/JPG/CR3};
         if [[ -f "$new_file" ]]; then
-          cp ${new_file} ${dirs[prj]}${dirs[4]};
+          cp -p ${new_file} ${dirs[prj]}${dirs[4]};
         fi
 
         folder_4=$((folder_4+1))
         ;;
       5)
-        cp ${j} ${dirs[prj]}${dirs[5]};
+        cp -p ${j} ${dirs[prj]}${dirs[5]};
         new_file=${j/JPG/CR3};
         if [[ -f "$new_file" ]]; then
-          cp ${new_file} ${dirs[prj]}${dirs[5]};
+          cp -p ${new_file} ${dirs[prj]}${dirs[5]};
         fi
 
         folder_5=$((folder_5+1))
@@ -84,13 +86,31 @@ do
 
     total=$((total+1))
   done
+
+  # video
+  for v in `find ${i} -type f -name "*.MP4"`
+  do
+    cp -p ${v} ${dirs[prj]}${dirs[video]};
+    rm ${v};
+    total=$((total+1))
+    video=$((video+1))
+  done
+
   echo "folder total: ${total}"
+  echo "folder video: ${video}"
   echo "folder rating 2: ${folder_2}"
   echo "folder rating 3: ${folder_3}"
   echo "folder rating 4: ${folder_4}"
   echo "folder rating 5: ${folder_5}"
 
+  # remove folder if empty
+  if [ -z "$(ls -A ${i})" ]; then
+    rm -r ${i};
+    echo "folder deleted"
+  fi
+
   st[total]=$((st[total]+total))
+  st[video]=$((st[video]+video))
   st[2]=$((st[2]+folder_2))
   st[3]=$((st[3]+folder_3))
   st[4]=$((st[4]+folder_4))
@@ -100,6 +120,7 @@ done
 
 echo "-------------------"
 echo "total: ${st[total]}"
+echo "video: ${st[video]}"
 echo "rating 2: ${st[2]}"
 echo "rating 3: ${st[3]}"
 echo "rating 4: ${st[4]}"
